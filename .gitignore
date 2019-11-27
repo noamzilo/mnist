@@ -1,0 +1,4 @@
+/.idea/*
+/mnist.pkl
+/mnist.pkl.gz
+/venv/*
