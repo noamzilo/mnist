@@ -52,18 +52,18 @@ class DataSet(object):
         assert 0 <= start_index
         assert start_index + cols * rows - 1 < len(self.x_test)
 
-        fig, ax = plt.subplots(nrows=rows, ncols=cols)
-        for i, row in enumerate(ax):
-            for j, col in enumerate(row):
+        fig, plots = plt.subplots(nrows=rows, ncols=cols)
+        for i, row_axes in enumerate(plots):
+            for j, ax in enumerate(row_axes):
                 plot_index = i * cols + j
                 index = start_index + plot_index
                 xticks([]), yticks([])
                 image = self.x_train[index].reshape(self._shape)
                 label = self.y_train[index]
 
-                col.imshow(image, cmap='gray', interpolation='nearest')
-                col.set_title(label)
-                col.axis('off')
+                ax.imshow(image, cmap='gray', interpolation='nearest')
+                ax.set_title(label)
+                ax.axis('off')
         plt.subplots_adjust(left=None, bottom=.1, right=None, top=0.95, wspace=None, hspace=None)
         plt.show()
 
