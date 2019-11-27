@@ -1,6 +1,6 @@
 import gzip
 import pickle
-import matplotlib.pyplot as plt
+from pylab import *
 
 
 class DataSet(object):
@@ -25,7 +25,6 @@ class DataSet(object):
         plt.title(title)
         plt.show()
 
-
     def show_train_image(self, index):
         assert 0 < index < len(self.x_train)
         im = self.x_train[index].reshape(self._shape)
@@ -39,15 +38,40 @@ class DataSet(object):
         self.show_mnist_image(title=label, image=im)
 
     def show_test_image(self, index):
-        assert 0 < index < len(self.x_test)
+        assert 0 <= index < len(self.x_test)
         im = self.x_test[index].reshape(self._shape)
         label = self.y_test[index]
         self.show_mnist_image(title=label, image=im)
+
+    def count_digits(self):
+        labels = np.hstack([self.y_train, self.y_validation, self.y_test])
+        unique, counts = np.unique(labels, return_counts=True)
+        print dict(zip(unique, counts))
+
+    def show_some_train_images(self, cols, rows, start_index):
+        assert 0 <= start_index
+        assert start_index + cols * rows - 1 < len(self.x_test)
+
+        fig, ax = plt.subplots(nrows=rows, ncols=cols)
+        for i, row in enumerate(ax):
+            for j, col in enumerate(row):
+                plot_index = i * cols + j
+                index = start_index + plot_index
+                xticks([]), yticks([])
+                image = self.x_train[index].reshape(self._shape)
+                label = self.y_train[index]
+
+                col.imshow(image, cmap='gray', interpolation='nearest')
+                col.set_title(label)
+                col.axis('off')
+        plt.subplots_adjust(left=None, bottom=.1, right=None, top=0.95, wspace=None, hspace=None)
+        plt.show()
 
 
 if __name__ == "__main__":
     def main():
         loader = DataSet('../mnist.pkl.gz')
         loader.show_train_image(100)
-
+        loader.count_digits()
+        loader.show_some_train_images(cols=4, rows=3, start_index=100)
     main()
