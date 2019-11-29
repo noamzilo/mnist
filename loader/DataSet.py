@@ -11,9 +11,9 @@ class DataSet(object):
 
     def _load(self):
         with gzip.open(self._path, 'rb') as f:
-            u = pickle.load(f)
-        # u.encoding = 'latin1'
-        train_set, validation_set, test_set = u  # separete to data and labels:
+            u = pickle._Unpickler(f)
+            u.encoding = 'latin1'
+            train_set, validation_set, test_set = u.load()
         self.x_train, self.y_train = train_set
         self.x_validation, self.y_validation = validation_set
         self.x_test, self.y_test = test_set
@@ -46,7 +46,7 @@ class DataSet(object):
     def count_digits(self):
         labels = np.hstack([self.y_train, self.y_validation, self.y_test])
         unique, counts = np.unique(labels, return_counts=True)
-        print dict(zip(unique, counts))
+        print(dict(zip(unique, counts)))
 
     def show_some_train_images(self, cols, rows, start_index):
         assert 0 <= start_index
