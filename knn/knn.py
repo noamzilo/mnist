@@ -15,8 +15,8 @@ class KnnClassifier(object):
         self._data_set = data_set
         train_data_size = len(self._data_set.y_train)
         test_data_size = len(self._data_set.y_test)
-        # train_data_size = 50000
-        # test_data_size = 10000
+        # train_data_size = 10000
+        # test_data_size = 1000
         self._train_subset_size = train_data_size
         self._test_subset_size = test_data_size
         self._x_train = self._data_set.x_train[:self._train_subset_size]
@@ -66,7 +66,7 @@ class KnnClassifier(object):
             self.classify_test_by_train(k)
             accuracy = self.calculate_performance()
             accuracies.append(accuracy)
-        plt.plot(accuracies)
+        plt.plot(np.array(range(1, max_k + 1)), accuracies)
         plt.xlabel('k')
         plt.ylabel('accuracy')
         plt.title(f'accuracy(k), #dimensions={self._x_train.shape[1]}')
@@ -77,7 +77,7 @@ class KnnClassifier(object):
 
 if __name__ == "__main__":
     def main():
-        data_set = DataSet('../mnist.pkl.gz')
+        data_set = DataSet(path='../mnist.pkl.gz')
         classifier = KnnClassifier(data_set)
         classifier.find_best_k()
 

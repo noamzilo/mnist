@@ -102,6 +102,11 @@ class PcaFun(object):
         # assert np.all(diff < 1e-5)
         return reduced_data
 
+    def restore_from_low_dim(self, pc_data, dim):
+        pca = self._pca
+        data_original = np.dot(pc_data, pca.components_[:dim, :]) + pca.mean_
+        return data_original
+
     def reduce_dimensionality_to_2_and_plot(self):
         train_reduced = self.reduce_dimensionality(self._x_train, dim=2)
         train_pc_x_component = train_reduced[:, 0]
@@ -131,20 +136,47 @@ class PcaFun(object):
         knn = KnnClassifier(reduced_data_set)
         knn.find_best_k(max_k=max_k_neighbours)
 
+    def reduce_dimensionality_and_restore(self, dim):
+        digit = self._x_test[0, :]
+        digit_reduced = self.reduce_dimensionality(digit, dim)
+        digit_restored = self.restore_from_low_dim(digit_reduced, dim)
+
+        fig, ax = plt.subplots(nrows=1, ncols=2)
+        axn = ax.flatten()
+        for j, col in enumerate(axn):
+            if j == 0:
+                col.imshow(np.reshape(digit_restored, self._shape), cmap='gray', interpolation='nearest')
+                col.set_title(f"restored #dim={dim}")
+            else:
+                col.imshow(np.reshape(digit, self._shape), cmap='gray', interpolation='nearest')
+                col.set_title(f"original")
+
+
+
+        plt.show(block=True)
+
 
 if __name__ == "__main__":
     data_set = DataSet('../mnist.pkl.gz')
     pca_fun = PcaFun(data_set)
     pca_fun.calculate_pca_for_train()
-    pca_fun.sanity_restore_data()
-    pca_fun.draw_average_digit()
-    pca_fun.draw_first_k_components(k=6, rows=2, cols=3)
-    pca_fun.draw_cumulative_variance_graph()
-    cutoff_for_80_percent = pca_fun.calculate_n_components_required(desired_variance_ratio=0.8)
-    cutoff_for_95_percent = pca_fun.calculate_n_components_required(desired_variance_ratio=0.95)
-    print(f"cutoff_for_80_percent: {cutoff_for_80_percent}")
-    print(f"cutoff_for_95_percent: {cutoff_for_95_percent}")
-    pca_fun.reduce_dimensionality_to_2_and_plot()
+    # pca_fun.sanity_restore_data()
+    # pca_fun.draw_average_digit()
+    # pca_fun.draw_first_k_components(k=6, rows=2, cols=3)
+    # pca_fun.draw_cumulative_variance_graph()
+    # cutoff_for_80_percent = pca_fun.calculate_n_components_required(desired_variance_ratio=0.8)
+    # cutoff_for_95_percent = pca_fun.calculate_n_components_required(desired_variance_ratio=0.95)
+    # print(f"cutoff_for_80_percent: {cutoff_for_80_percent}")
+    # print(f"cutoff_for_95_percent: {cutoff_for_95_percent}")
+    # pca_fun.reduce_dimensionality_to_2_and_plot()
     pca_fun.reduce_dimensionality_and_classify_by_knn(n_dim=2, max_k_neighbours=10)
     pca_fun.reduce_dimensionality_and_classify_by_knn(n_dim=10, max_k_neighbours=10)
     pca_fun.reduce_dimensionality_and_classify_by_knn(n_dim=20, max_k_neighbours=10)
+    pca_fun.reduce_dimensionality_and_restore(dim=2)
+    pca_fun.reduce_dimensionality_and_restore(dim=5)
+    pca_fun.reduce_dimensionality_and_restore(dim=10)
+    pca_fun.reduce_dimensionality_and_restore(dim=50)
+    pca_fun.reduce_dimensionality_and_restore(dim=100)
+    pca_fun.reduce_dimensionality_and_restore(dim=150)
+
+
