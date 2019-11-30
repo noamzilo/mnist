@@ -6,7 +6,8 @@ from pylab import *
 class DataSet(object):
     def __init__(self, path):
         self._path = path
-        self._shape = (28, 28)
+        self.shape = (28, 28)
+        self.n_features = np.prod(self.shape)
         self._load()
 
     def _load(self):
@@ -27,19 +28,19 @@ class DataSet(object):
 
     def show_train_image(self, index):
         assert 0 < index < len(self.x_train)
-        im = self.x_train[index].reshape(self._shape)
+        im = self.x_train[index].reshape(self.shape)
         label = self.y_train[index]
         self.show_mnist_image(title=label, image=im)
 
     def show_validation_image(self, index):
         assert 0 < index < len(self.x_validation)
-        im = self.x_validation[index].reshape(self._shape)
+        im = self.x_validation[index].reshape(self.shape)
         label = self.y_validation[index]
         self.show_mnist_image(title=label, image=im)
 
     def show_test_image(self, index):
         assert 0 <= index < len(self.x_test)
-        im = self.x_test[index].reshape(self._shape)
+        im = self.x_test[index].reshape(self.shape)
         label = self.y_test[index]
         self.show_mnist_image(title=label, image=im)
 
@@ -58,7 +59,7 @@ class DataSet(object):
                 plot_index = i * cols + j
                 index = start_index + plot_index
                 xticks([]), yticks([])
-                image = self.x_train[index].reshape(self._shape)
+                image = self.x_train[index].reshape(self.shape)
                 label = self.y_train[index]
 
                 ax.imshow(image, cmap='gray', interpolation='nearest')

@@ -14,10 +14,10 @@ class KnnClassifier(object):
     def __init__(self, data_path):
         self._data_path = data_path
         self._data_set = DataSet(self._data_path)
-        # train_data_size = len(self._data_set.y_train)
-        # test_data_size = len(self._data_set.y_test)
-        train_data_size = 50000
-        test_data_size = 10000
+        train_data_size = len(self._data_set.y_train)
+        test_data_size = len(self._data_set.y_test)
+        # train_data_size = 50000
+        # test_data_size = 10000
         self._train_subset_size = train_data_size
         self._test_subset_size = test_data_size
         self._x_train = self._data_set.x_train[:self._train_subset_size]
