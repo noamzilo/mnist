@@ -124,6 +124,9 @@ class PcaFun(object):
         reduced_data_set.x_train = self.reduce_dimensionality(self._x_train, dim=n_dim)
         reduced_data_set.x_test = self.reduce_dimensionality(self._x_test, dim=n_dim)
         reduced_data_set.x_validation = self.reduce_dimensionality(self._data_set.x_validation, dim=n_dim)
+        reduced_data_set.y_train = self._y_train
+        reduced_data_set.y_validation = self._data_set.y_validation
+        reduced_data_set.y_test = self._y_test
 
         knn = KnnClassifier(reduced_data_set)
         knn.find_best_k(max_k=max_k_neighbours)
