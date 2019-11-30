@@ -18,9 +18,14 @@ class KnnClassifier(object):
         x_test = self._x_test[:only_check_for_x_first]
         x_train = self._x_train[:only_use_first_x_from_test]
         pairs_distances = cdist(x_test, x_train)
-        k_min_distances_inds_per_test_sample = np.argpartition(pairs_distances, k, axis=0)[:, :k]
+        # k_min_distances_inds_per_test_sample = np.argpartition(pairs_distances, k, axis=0)[:, :k]
+        sorted_distances_ind = np.argsort(pairs_distances, axis=1)
+        sorted_distances = pairs_distances[:, sorted_distances_ind]
+        k_min_distances_per_test_sample = pairs_distances[k_min_distances_inds_per_test_sample]
+
         votes_per_test_sample = self._y_train[k_min_distances_inds_per_test_sample]
         classes, votes_count = np.unique(votes_per_test_sample, return_counts=True, axis=0)
+        votes_count[classes].reshape(votes_per_test_sample.shape)
         hi=5
 
 
