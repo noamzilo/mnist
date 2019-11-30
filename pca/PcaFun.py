@@ -146,3 +146,5 @@ if __name__ == "__main__":
     print(f"cutoff_for_95_percent: {cutoff_for_95_percent}")
     pca_fun.reduce_dimensionality_to_2_and_plot()
     pca_fun.reduce_dimensionality_and_classify_by_knn(n_dim=2, max_k_neighbours=10)
+    pca_fun.reduce_dimensionality_and_classify_by_knn(n_dim=10, max_k_neighbours=10)
+    pca_fun.reduce_dimensionality_and_classify_by_knn(n_dim=20, max_k_neighbours=10)

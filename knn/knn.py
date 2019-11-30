@@ -67,6 +67,9 @@ class KnnClassifier(object):
             accuracy = self.calculate_performance()
             accuracies.append(accuracy)
         plt.plot(accuracies)
+        plt.xlabel('k')
+        plt.ylabel('accuracy')
+        plt.title('accuracy(k)')
         plt.show(block=True)
         best_k = np.argmax(accuracies) + 1
         print(f"best k is {best_k}")
