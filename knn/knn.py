@@ -11,9 +11,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 
 class KnnClassifier(object):
-    def __init__(self, data_path):
-        self._data_path = data_path
-        self._data_set = DataSet(self._data_path)
+    def __init__(self, data_set):
+        self._data_set = data_set
         train_data_size = len(self._data_set.y_train)
         test_data_size = len(self._data_set.y_test)
         # train_data_size = 50000
@@ -75,7 +74,8 @@ class KnnClassifier(object):
 
 if __name__ == "__main__":
     def main():
-        classifier = KnnClassifier(data_path='../mnist.pkl.gz')
+        data_set = DataSet('../mnist.pkl.gz')
+        classifier = KnnClassifier(data_set)
         classifier.find_best_k()
 
 

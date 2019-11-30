@@ -1,12 +1,12 @@
 from loader.DataSet import DataSet
 from sklearn.decomposition import PCA
+from knn.knn import KnnClassifier
 from pylab import *
 
 
 class PcaFun(object):
-    def __init__(self, data_path):
-        self._data_path = data_path
-        self._data_set = DataSet(self._data_path)
+    def __init__(self, data_set):
+        self._data_set = data_set
         self._shape = self._data_set.shape
         train_data_size = len(self._data_set.y_train)
         test_data_size = len(self._data_set.y_test)
@@ -90,28 +90,60 @@ class PcaFun(object):
         cutoff_ind = np.searchsorted(cumulative_explained_variance_ratio, desired_variance_ratio) + 1
         return cutoff_ind
 
-    def reduce_dimensionality_to_2_and_plot(self):
+    def reduce_dimensionality(self, data, dim):
         pca = self._pca
-        train_pc = pca.transform(self._x_train)
-        train_pc_x_component = train_pc[:, 0]
-        train_pc_y_component = train_pc[:, 1]
+        reduced_components = pca.components_.T[:, :dim]
+        reduced_data = np.dot(data - pca.mean_, reduced_components)
+
+        # # same result, but slower due to higher dimension
+        # transformed = pca.transform(data)
+        # reduced_data = transformed[:, :dim]
+        # diff = reduced_data - transformed_manually
+        # assert np.all(diff < 1e-5)
+        return reduced_data
+
+    def reduce_dimensionality_to_2_and_plot(self):
+        train_reduced = self.reduce_dimensionality(self._x_train, dim=2)
+        train_pc_x_component = train_reduced[:, 0]
+        train_pc_y_component = train_reduced[:, 1]
 
         labels = self._y_train
-        # colors = ['r', 'g', 'b', 'm', 'y', 't', 'k', (255, 125, 40), (68, 202, 225), (82, 255, 38)]
 
         plt.figure()
         plt.title('dimensionality reduction to 2')
 
-        for i, label in enumerate(np.unique(labels)):
+        for label in np.unique(labels):
             label_ind = np.where(labels == label)
             plt.scatter(train_pc_x_component[label_ind], train_pc_y_component[label_ind],
                         marker='.',
                         c=np.random.rand(3,))
         plt.show(block=True)
 
+    def reduce_dimensionality_and_classify_by_knn(self, n_dim, k_neighbours):
+        def reduce_with_pca(data, main_components):
+            data_reduced = np.dot(data - pca.mean_, pca.components_.T)
+
+        pca = self._pca
+        train_pc = pca.transform(self._x_train)
+        main_components = np.zeros((train_pc.shape[0], n_dim))
+        for dim in range(n_dim):
+            main_components[:, dim] = train_pc[:, dim]
+
+        reduced_data_set = DataSet(None)
+        reduced_data_set.x_train = main_components
+        # reduced_data_set.y_train
+        # reduced_data_set.x_test =
+        # reduced_data_set.y_test
+        # reduced_data_set.x_validation
+        # reduced_data_set.y_validation
+
+        knn = KnnClassifier(reduced_data_set)
+
+
 
 if __name__ == "__main__":
-    pca_fun = PcaFun(data_path='../mnist.pkl.gz')
+    data_set = DataSet('../mnist.pkl.gz')
+    pca_fun = PcaFun(data_set)
     pca_fun.calculate_pca_for_train()
     pca_fun.sanity_restore_data()
     pca_fun.draw_average_digit()

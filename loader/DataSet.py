@@ -5,6 +5,9 @@ from pylab import *
 
 class DataSet(object):
     def __init__(self, path):
+        if path is None:
+            print("no data loaded for None path!")
+            return
         self._path = path
         self.shape = (28, 28)
         self.n_features = np.prod(self.shape)
