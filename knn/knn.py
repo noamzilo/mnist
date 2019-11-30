@@ -14,8 +14,12 @@ class KnnClassifier(object):
     def __init__(self, data_path):
         self._data_path = data_path
         self._data_set = DataSet(self._data_path)
-        self._train_subset_size = len(self._data_set.y_train)
-        self._test_subset_size = len(self._data_set.y_test)
+        # train_data_size = len(self._data_set.y_train)
+        # test_data_size = len(self._data_set.y_test)
+        train_data_size = 50000
+        test_data_size = 10000
+        self._train_subset_size = train_data_size
+        self._test_subset_size = test_data_size
         self._x_train = self._data_set.x_train[:self._train_subset_size]
         self._y_train = self._data_set.y_train[:self._train_subset_size]
         self._x_test = self._data_set.x_test[:self._test_subset_size]
@@ -41,6 +45,7 @@ class KnnClassifier(object):
         votes_per_test_sample = self._y_train[k_min_distances_inds_per_test_sample]
         vote_counts_per_test_sample = bin_count_2d_vectorized(votes_per_test_sample)
         self._y_predict = np.argmax(vote_counts_per_test_sample, axis=1)
+        # ties are broken using np's tie breaker: select 1st.
 
     def calculate_performance(self):
         self._confusion_matrix = confusion_matrix(self._y_test, self._y_predict)

@@ -73,5 +73,5 @@ if __name__ == "__main__":
         loader = DataSet('../mnist.pkl.gz')
         loader.show_train_image(100)
         loader.count_digits()
-        loader.show_some_train_images(cols=4, rows=3, start_index=100)
+        loader.show_some_train_images(cols=4, rows=3, start_index=0)
     main()
