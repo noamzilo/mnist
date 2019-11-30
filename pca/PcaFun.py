@@ -151,8 +151,6 @@ class PcaFun(object):
                 col.imshow(np.reshape(digit, self._shape), cmap='gray', interpolation='nearest')
                 col.set_title(f"original")
 
-
-
         plt.show(block=True)
 
 
