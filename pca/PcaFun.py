@@ -119,26 +119,14 @@ class PcaFun(object):
                         c=np.random.rand(3,))
         plt.show(block=True)
 
-    def reduce_dimensionality_and_classify_by_knn(self, n_dim, k_neighbours):
-        def reduce_with_pca(data, main_components):
-            data_reduced = np.dot(data - pca.mean_, pca.components_.T)
-
-        pca = self._pca
-        train_pc = pca.transform(self._x_train)
-        main_components = np.zeros((train_pc.shape[0], n_dim))
-        for dim in range(n_dim):
-            main_components[:, dim] = train_pc[:, dim]
-
+    def reduce_dimensionality_and_classify_by_knn(self, n_dim, max_k_neighbours):
         reduced_data_set = DataSet(None)
-        reduced_data_set.x_train = main_components
-        # reduced_data_set.y_train
-        # reduced_data_set.x_test =
-        # reduced_data_set.y_test
-        # reduced_data_set.x_validation
-        # reduced_data_set.y_validation
+        reduced_data_set.x_train = self.reduce_dimensionality(self._x_train, dim=n_dim)
+        reduced_data_set.x_test = self.reduce_dimensionality(self._x_test, dim=n_dim)
+        reduced_data_set.x_validation = self.reduce_dimensionality(self._data_set.x_validation, dim=n_dim)
 
         knn = KnnClassifier(reduced_data_set)
-
+        knn.find_best_k(max_k=max_k_neighbours)
 
 
 if __name__ == "__main__":
@@ -154,3 +142,4 @@ if __name__ == "__main__":
     print(f"cutoff_for_80_percent: {cutoff_for_80_percent}")
     print(f"cutoff_for_95_percent: {cutoff_for_95_percent}")
     pca_fun.reduce_dimensionality_to_2_and_plot()
+    pca_fun.reduce_dimensionality_and_classify_by_knn(n_dim=2, max_k_neighbours=10)
