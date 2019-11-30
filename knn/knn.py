@@ -69,7 +69,7 @@ class KnnClassifier(object):
         plt.plot(accuracies)
         plt.xlabel('k')
         plt.ylabel('accuracy')
-        plt.title('accuracy(k)')
+        plt.title(f'accuracy(k), #dimensions={self._x_train.shape[1]}')
         plt.show(block=True)
         best_k = np.argmax(accuracies) + 1
         print(f"best k is {best_k}")
