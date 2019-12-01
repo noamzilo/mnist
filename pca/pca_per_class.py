@@ -92,13 +92,28 @@ class PcaPerClass(object):
         plt.show()
 
     def calculate_distances_to_original(self, index):
+        distances = np.zeros(self._n_classes)
         for i in range(self._n_classes):
             image = self._x_pred_restored[i, index, :]
             diff = np.abs(image - self._x_test[index, :])
             diff2 = diff ** 2
             sum_diff2 = np.sum(diff2)
-            print(sum_diff2)
+            distances[i] = sum_diff2
+        print(distances)
+        best_model_ind = np.argmin(distances)
+        print(f"best_model: {best_model_ind}")
 
+    def calculate_all_distances_to_original(self):
+        distances = np.zeros((self._x_test.shape[0], self._n_classes))
+        for i in range(self._n_classes):
+            images = self._x_pred_restored[i, :, :]
+            diff = np.abs(images - self._x_test[:, :])
+            diff2 = diff ** 2
+            sum_diff2 = np.sum(diff2)
+            distances[i] = sum_diff2
+        best_model_inds = np.argmin(distances, axis=0)
+        # print(f"best_model: {best_model_inds}")
+        hi=5
 
 if __name__ == "__main__":
     def main():
@@ -111,5 +126,6 @@ if __name__ == "__main__":
         ind = 580
         pca_per_class.draw_sample_restored_image(index=ind)
         pca_per_class.calculate_distances_to_original(index=ind)
+        pca_per_class.calculate_all_distances_to_original()
 
     main()
