@@ -55,18 +55,18 @@ class PcaPerClass(object):
             plt.subplots_adjust(left=None, bottom=.1, right=None, top=0.95, wspace=None, hspace=None)
             plt.show()
 
-    def project_test_set_to_all_models(self):
-        self._x_pred_pc = np.zeros((len(self._class_pca_models), self._x_test.shape[0], self._x_test.shape[1]))
+    def project_test_set_to_all_models(self, dim):
+        self._x_pred_pc = np.zeros((len(self._class_pca_models), self._x_test.shape[0], dim))
         data = self._x_test
         for i, pca in enumerate(self._class_pca_models):
-            class_components = pca.components_.T
+            class_components = pca.components_.T[:, :dim]
             self._x_pred_pc[i, :, :] = np.dot(data - pca.mean_, class_components)
 
-    def restore_pred_to_all_models(self):
+    def restore_pred_to_all_models(self, dim):
         self._x_pred_restored = np.zeros((len(self._class_pca_models), self._x_test.shape[0], self._x_test.shape[1]))
         for i, pca in enumerate(self._class_pca_models):
             x_pred_pc = self._x_pred_pc[i, :, :]
-            self._x_pred_restored[i, :, :] = np.dot(x_pred_pc, pca.components_) + pca.mean_
+            self._x_pred_restored[i, :, :] = np.dot(x_pred_pc, pca.components_[:dim, :]) + pca.mean_
         # plt.figure()
         # plt.imshow(np.reshape(self._x_pred_restored[1, 100, :], self._shape))
         # plt.show(block=True)
@@ -86,7 +86,7 @@ class PcaPerClass(object):
                 image = images[plot_index, :].reshape(self._shape)
 
                 ax.imshow(image, cmap='gray', interpolation='nearest')
-                ax.set_title(f"class #{plot_index} model")
+                ax.set_title(f"model of #{plot_index}")
                 ax.axis('off')
         plt.subplots_adjust(left=None, bottom=.1, right=None, top=0.95, wspace=None, hspace=None)
         plt.show()
@@ -107,23 +107,26 @@ class PcaPerClass(object):
         distances = np.zeros((self._x_test.shape[0], self._n_classes))
         for i in range(self._n_classes):
             images = self._x_pred_restored[i, :, :]
-            diff = np.abs(images - self._x_test[:, :])
+            diff = np.abs(images - self._x_test)
             diff2 = diff ** 2
-            sum_diff2 = np.sum(diff2)
-            distances[i] = sum_diff2
-        best_model_inds = np.argmin(distances, axis=0)
-        # print(f"best_model: {best_model_inds}")
-        hi=5
+            sum_diff2 = np.sum(diff2, axis=1)
+            distances[:, i] = sum_diff2
+        best_model_inds = np.argmin(distances, axis=1)
+
+        correct_test_samples = np.equal(best_model_inds, self._y_test)
+        ratio = np.sum(correct_test_samples) / len(correct_test_samples)
+        print(f"different pca successful classification: {ratio}")
 
 if __name__ == "__main__":
     def main():
+        reduce_to_dim = 6
         data_set = DataSet('../mnist.pkl.gz')
         pca_per_class = PcaPerClass(data_set)
         pca_per_class.calculate_pca_for_all_classes()
         # pca_per_class.draw_first_k_components(k=6, rows=2, cols=3)
-        pca_per_class.project_test_set_to_all_models()
-        pca_per_class.restore_pred_to_all_models()
-        ind = 580
+        pca_per_class.project_test_set_to_all_models(dim=reduce_to_dim)
+        pca_per_class.restore_pred_to_all_models(dim=reduce_to_dim)
+        ind = 11
         pca_per_class.draw_sample_restored_image(index=ind)
         pca_per_class.calculate_distances_to_original(index=ind)
         pca_per_class.calculate_all_distances_to_original()
