@@ -1,5 +1,6 @@
 # mnist
 Open University Computer Vision 22928- Ex1 Classical Machine Learning Algorithms with MNIST.
+Full report can be found under /report/mnist.docx
 
 
 # KNN
